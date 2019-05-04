@@ -1,0 +1,85 @@
+import React, { Component } from 'react';
+import './Todo.css';
+
+export default class Todo extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      isEditing: false,
+      input: this.props.input
+    };
+
+    this.handleRemove = this.handleRemove.bind(this);
+    this.toggleForm = this.toggleForm.bind(this);
+    this.handleChange = this.handleChange.bind(this);
+    this.handleUpdate = this.handleUpdate.bind(this);
+    this.handleFinish = this.handleFinish.bind(this);
+  }
+
+  handleRemove() {
+    this.props.delete(this.props.id);
+  }
+
+  toggleForm() {
+    this.setState({
+      isEditing: !this.state.isEditing
+    });
+  }
+
+  handleUpdate(e) {
+    e.preventDefault();
+    this.props.edit(this.props.id, this.state.input);
+    this.setState({ isEditing: false });
+  }
+
+  handleChange(e) {
+    this.setState({
+      [e.target.name]: e.target.value
+    });
+  }
+
+  handleFinish(e) {
+    this.props.toggleCompletion(this.props.id);
+  }
+
+  render() {
+    let result;
+    if (this.state.isEditing) {
+      result = (
+        <div className="Todo">
+          <form className="Todo-edit-form" onSubmit={this.handleUpdate}>
+            <input
+              type="text"
+              value={this.state.input}
+              name="input"
+              onChange={this.handleChange}
+            />
+            <button>Save</button>
+          </form>
+        </div>
+      );
+    } else {
+      result = (
+        <div className="Todo">
+          <li
+            className={
+              this.props.completed ? 'Todo-task completed' : 'Todo-task'
+            }
+            onClick={this.handleFinish}
+          >
+            {this.props.input}
+          </li>
+          <div className="Todo-buttons">
+            <button onClick={this.toggleForm}>
+              <i className="fas fa-pen" />
+            </button>
+            <button onClick={this.handleRemove}>
+              <i className="fas fa-trash" />
+            </button>
+          </div>
+        </div>
+      );
+    }
+    return result;
+  }
+}
